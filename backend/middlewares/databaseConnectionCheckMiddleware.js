@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 
-export const checkDatabaseConnection = async (req, res, next) => {
+const checkDatabaseConnection = async (req, res, next) => {
     if (mongoose.connection.readyState === 1) {
         next();
     }
@@ -9,3 +9,4 @@ export const checkDatabaseConnection = async (req, res, next) => {
     }
 }
 
+module.exports = {checkDatabaseConnection}
