@@ -7,6 +7,18 @@ const productModel = new mongoose.Schema(
             required: true,
             unique: true
         },
+        slug: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true
+        },
+        tags: [ 
+            {
+                type: String,
+                trim: true
+            }
+        ],
         category: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
@@ -26,6 +38,19 @@ const productModel = new mongoose.Schema(
         timestamps: true
     }
 )
+
+// create a slug for the name before saving
+productModel.pre("save", async function(next) {
+    if (this.isModified("name")) {
+        this.slug = this.name
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/(^-|-$)/g, '');
+    }
+    next();
+})
+
+productModel.index({ name: 'text', description: 'text', tags: 'text'})
 
 const Product = mongoose.model("Product", productModel);
 
