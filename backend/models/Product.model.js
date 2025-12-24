@@ -52,6 +52,8 @@ productModel.pre("save", async function(next) {
 
 productModel.index({ name: 'text', description: 'text', tags: 'text'})
 
+productModel.index({ category : 1})
+
 const Product = mongoose.model("Product", productModel);
 
 module.exports = Product
