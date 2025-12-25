@@ -12,6 +12,12 @@ const app = express();
 app.use(express.urlencoded({ extended : true }))
 app.use(express.json());
 app.use(cors());
+app.use(checkDatabaseConnection)
+
+// app.get("/*", (req, res) => {
+//   res.sendFile(path.join(__dirname + "/../../client/dist/index.html"));
+// });
+
 
 mongoose.connect(process.env.MONGO_CONNECTION_STRING)
     .then(() => {

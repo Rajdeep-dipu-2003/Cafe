@@ -15,7 +15,49 @@ const userSchema = new mongoose.Schema(
         phoneNumber: {
             type: Number,
             required: true,
-        }
+        },
+        orders: [
+            {
+                order: {
+                    type: mongoose.Types.Schema.model,
+                    ref: 'Order',
+                },
+                
+                orderItems: [
+                    {
+                        product: {
+                            type: mongoose.Types.Schema.ObjectId,
+                            ref: "Product",
+                            required: true,
+                        },
+                        quantity: {
+                            type: Number,
+                            min: [1, "Atleast add one product"],
+                            required: true
+                        },
+                        price: {
+                            type: Number,
+                            required: true,
+                            min: [0, "Price cannot be negative"]
+                        },
+                        image: {
+                            type: String,
+                            required: true
+                        },
+                        subtotal: {
+                            type: Number,
+                            required: true
+                        }
+                    }
+                ],
+
+                date: {
+                    type: Date,
+                    required: true
+                }
+
+            }
+        ]
     },
     {
         timestamps: true
