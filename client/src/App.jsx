@@ -1,11 +1,16 @@
+import { Routes, Route } from "react-router-dom";
+
 import Home from "./Pages/Home"
+import UserDashboard from "./Pages/UserDashboard";
 
 function App() {
 
-
   return (
     <>
-      <Home/>
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="/user-dashboard" element={<UserDashboard/>}></Route>
+      </Routes>
     </>
   )
 }
