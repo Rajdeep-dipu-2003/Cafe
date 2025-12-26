@@ -1,8 +1,8 @@
-import SearchBar from "../Components/dashboard/user/SearchBar"
+import Navbar from "../Components/dashboard/user/Navbar/Navbar.jsx"
 
 function UserDashboard() {
     return <>
-        <SearchBar/>
+        <Navbar/>
         {/* <CategorySearch/>
         <PopularSection/> */}
     </>

@@ -1,15 +1,12 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-
-
 function SearchBar() {
-    return (
-        <div className="w-full h-16 bg-red-100 flex items-center justify-center">
-            <div className="relative w-full max-w-xl px-4">
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    className="
+    return <>
+        <div className="relative w-full max-w-xl px-4">
+            <input
+                type="text"
+                placeholder="Search..."
+                className="
                         w-full
                         h-11
                         pl-4
@@ -24,12 +21,12 @@ function SearchBar() {
                         focus:ring-red-300
                         transition
                     "
-                />
+            />
 
-                {/* Microphone Icon */}
-                <button
-                    type="button"
-                    className="
+            {/* Microphone Icon */}
+            <button
+                type="button"
+                className="
                         absolute
                         right-6
                         top-1/2
@@ -38,12 +35,11 @@ function SearchBar() {
                         hover:text-red-500
                         transition
                     "
-                >
-                    <MagnifyingGlassIcon className="h-5 w-5" />
-                </button>
-            </div>
+            >
+                <MagnifyingGlassIcon className="h-5 w-5" />
+            </button>
         </div>
-    );
+    </>
 }
 
-export default SearchBar;
+export default SearchBar
