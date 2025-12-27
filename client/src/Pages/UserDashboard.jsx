@@ -1,5 +1,6 @@
 import Navbar from "../Components/dashboard/user/Navbar/Navbar.jsx"
 import CategoryFilter from "../Components/dashboard/user/CategoryFilter/CategoryFilter.jsx"
+import PopularItemsFilter from "../Components/dashboard/user/PopularItems/PopularItemsFilter.jsx"
 
 function UserDashboard() {
     return <>
@@ -8,6 +9,7 @@ function UserDashboard() {
         >
             <Navbar />
             <CategoryFilter />
+            <PopularItemsFilter/>
         </div>
     </>
 }
