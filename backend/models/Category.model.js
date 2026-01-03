@@ -10,7 +10,6 @@ const categorySchema = new mongoose.Schema(
         },
         slug: {
             type: String,
-            required: true,
             lowercase: true,
         },
         image: {
@@ -19,11 +18,13 @@ const categorySchema = new mongoose.Schema(
         }
     },
     {
-        timestamps: true
+        timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
     }
 )
 
-categorySchema.pre("save", async function(next) {
+categorySchema.pre("validate", async function(next) {
     if (this.isModified('name')) {
         this.slug = this.name  
                         .toLowerCase()
@@ -39,6 +40,8 @@ categorySchema.virtual("productCount", {
     foreignField: 'category',
     count: true
 })
+
+categorySchema.index({name: "text"});
 
 const Category = mongoose.model("Category", categorySchema);
 

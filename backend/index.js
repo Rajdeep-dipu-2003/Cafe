@@ -2,10 +2,11 @@ const mongoose = require("mongoose")
 const express = require("express")
 const dotenv = require("dotenv")
 const cors = require("cors")
+const v1_router = require("./routes")
 
 const {checkDatabaseConnection} = require("./middlewares/databaseConnectionCheckMiddleware")
 
-dotenv.config({path: "./env"});
+dotenv.config();
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.use(checkDatabaseConnection)
 //   res.sendFile(path.join(__dirname + "/../../client/dist/index.html"));
 // });
 
+
+app.use("/api/v1", v1_router)
 
 mongoose.connect(process.env.MONGO_CONNECTION_STRING)
     .then(() => {

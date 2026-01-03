@@ -6,7 +6,7 @@ const authorizeAdmin = require("../middlewares/authorizeAdmin.js")
 const AdminController = require("../controllers/admin.controller");
 const adminController = new AdminController();
 
-adminRouter.use(authorizeAdmin);
+// adminRouter.use(authorizeAdmin);
 
 adminRouter.post("/add-prouduct", async(req, res) => {
     try {
@@ -56,4 +56,6 @@ adminRouter.post("/create-new-category", async (req, res) => {
             .json({ error: e?.message || "Inernal Server Error" })
     }
 })
+
+module.exports = adminRouter;
 

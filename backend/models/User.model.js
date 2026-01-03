@@ -24,14 +24,15 @@ const userSchema = new mongoose.Schema(
         orders: [
             {
                 order: {
-                    type: mongoose.Types.Schema.model,
+                    type: mongoose.Schema.Types.ObjectId
+                    ,
                     ref: 'Order',
                 },
                 
                 orderItems: [
                     {
                         product: {
-                            type: mongoose.Types.Schema.ObjectId,
+                            type: mongoose.Schema.Types.ObjectId,
                             ref: "Product",
                             required: true,
                         },

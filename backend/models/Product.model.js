@@ -37,6 +37,9 @@ const productModel = new mongoose.Schema(
             type: Number,
             required: true,
             min: [0, "Price cannot be negative"]
+        }, 
+        orderCount: {
+            type: Number
         }
     },
     {

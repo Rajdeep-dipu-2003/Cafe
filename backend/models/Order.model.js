@@ -3,16 +3,15 @@ const mongoose = require("mongoose")
 const orderSchema = new mongoose.Schema(
     {
         user: {
-            type: mongoose.Types.Schema.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
             required: true,
-            unique: true,
         },
 
         orderItems: [
             {
                 product: {
-                    type: mongoose.Types.Schema.ObjectId,
+                    type: mongoose.Schema.Types.ObjectId,
                     ref: "Product",
                     required: true,
                 },
@@ -30,10 +29,6 @@ const orderSchema = new mongoose.Schema(
                     type: String,
                     required: true
                 },
-                subtotal: {
-                    type: Number,
-                    required: true
-                }
             }
         ],
 
@@ -54,7 +49,7 @@ const orderSchema = new mongoose.Schema(
                 type: String
             },
             status: {
-                type: "String",
+                type: String,
                 enum: ["Pending", "Success"],
                 required: true
             },
@@ -63,9 +58,9 @@ const orderSchema = new mongoose.Schema(
             }
         },
 
-        orderStaus: {
+        orderStatus: {
             type: String, 
-            requied: true,
+            required: true,
             enum: ["Pending", "Preparing", "Ready", "Complete"]
         },
 
@@ -86,6 +81,18 @@ const orderSchema = new mongoose.Schema(
 )
 
 // TODO : Add order number logic : Order number should be reset to 1 daily
+
+// TODO : Total price should also be saved as a derieved feild
+orderSchema.pre("save", function () {
+    this.orderItems.forEach(item => {
+        item.subtotal = item.quantity * item.price;
+    });
+
+    this.totalPrice = this.orderItems.reduce(
+        (sum, item) => sum + item.subtotal,
+        0
+    );
+});
 
 const Order = mongoose.model("Order", orderSchema);
 
