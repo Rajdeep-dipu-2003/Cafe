@@ -18,7 +18,7 @@ class ProductDTO {
     static fromRequest(body) {
         try {
             const parsed = productSchema.parse(body);
-            return ProductDTO(parsed)
+            return new ProductDTO(parsed)
         }
         catch(e) {
             throw new HttpException(400, "Incomplete or Invalid Products feilds")

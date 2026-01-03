@@ -63,7 +63,7 @@ class AdminController {
 
             await Category.create(categoryDto);
 
-            return res.status(201).json({ message: "Category created successfully"});
+            return;
         }
         catch(e) {
 

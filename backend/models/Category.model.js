@@ -4,7 +4,7 @@ const categorySchema = new mongoose.Schema(
     {
         name: {
             type: String,
-            required: [true, "Please provide a category name"], 
+            required: [true, "Please provide a category name"],
             trim: true,
             maxlength: [50, "Category name cannot exceed 50 characters"]
         },
@@ -12,8 +12,8 @@ const categorySchema = new mongoose.Schema(
             type: String,
             lowercase: true,
         },
-        image: {
-            type: String, 
+        imageUrl: {
+            type: String,
             required: true
         }
     },
@@ -24,15 +24,14 @@ const categorySchema = new mongoose.Schema(
     }
 )
 
-categorySchema.pre("validate", async function(next) {
+categorySchema.pre("save", async function () {
     if (this.isModified('name')) {
-        this.slug = this.name  
-                        .toLowerCase()
-                        .replace(/[^a-z0-9]+/g, '-')
-                        .replace(/(^-|-$)/g, '')
+        this.slug = this.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '');
     }
-    next()
-})
+});
 
 categorySchema.virtual("productCount", {
     ref: "Product",
@@ -41,7 +40,7 @@ categorySchema.virtual("productCount", {
     count: true
 })
 
-categorySchema.index({name: "text"});
+categorySchema.index({ name: "text" });
 
 const Category = mongoose.model("Category", categorySchema);
 

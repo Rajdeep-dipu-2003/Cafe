@@ -8,16 +8,16 @@ const categorySchema = z.object({
 
 class CategoryDto {
     constructor(data) {
-        Object.assingn(this, data);
+        Object.assign(this, data);
     }
 
     static fromRequest(body) {
         try {
             const parsed = categorySchema.parse(body);
-            return CategoryDto(parsed);
+            return new CategoryDto(parsed);
         }
         catch(e) {
-            throw HttpException(400, "Invalid or incomplete category feild.");
+            throw new HttpException(400, "Invalid or incomplete category feild.");
         }
     }
 }
