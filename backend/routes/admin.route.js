@@ -8,7 +8,7 @@ const adminController = new AdminController();
 
 // adminRouter.use(authorizeAdmin);
 
-adminRouter.post("/add-prouduct", async(req, res) => {
+adminRouter.post("/add-product", async(req, res) => {
     try {
         await adminController.addProduct(req, res);
     }
