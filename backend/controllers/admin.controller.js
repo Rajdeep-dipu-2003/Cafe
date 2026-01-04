@@ -27,9 +27,13 @@ class AdminController {
 
     async deleteProduct(req, res) {
         try {
-            const productDto = ProductDTO.fromRequest(req.body);
-            // should we delete by id or name is ok ?
-            Product.deleteOne({ name: productDto.name })
+            const { productId } = req.body;
+            await productService.deleteProduct(productId);
+
+            return res.status(201).json({
+                success: true,
+                message: "Product Deleted Successfully!"
+            });
         }
         catch (e) {
             // should we use res or throw ? 
