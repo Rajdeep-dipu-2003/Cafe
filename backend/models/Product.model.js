@@ -47,14 +47,13 @@ const productModel = new mongoose.Schema(
 )
 
 // create a slug for the name before saving
-productModel.pre("save", async function(next) {
+productModel.pre("save", function() {
     if (this.isModified("name")) {
         this.slug = this.name
                         .toLowerCase()
                         .replace(/[^a-z0-9]+/g, '-')
                         .replace(/(^-|-$)/g, '');
     }
-    next();
 })
 
 productModel.index({ name: 'text', description: 'text', tags: 'text'})
