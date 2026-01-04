@@ -34,6 +34,7 @@ async function createNewProduct(productDto) {
     }
 }
 
+// TODO : Replace category name with mongoose document id instead since name might change but category wont
 async function getAllProductsOfCategory(categoryName) {
     try {
         const category = await Category.findOne({ name: categoryName });
@@ -53,7 +54,28 @@ async function getAllProductsOfCategory(categoryName) {
     }
 }
 
+async function deleteProduct(productId) {
+    try {
+        if (productId === null || productId === undefined) {
+            throw new HttpException(400, "Invalid product Id.") 
+        }
+
+        const result = await Product.deleteOne({ _id : productId});
+        
+        if (result.deletedCount === 0) {
+            throw new HttpException(400, "Give Product might be already deleted.")
+        }
+    }
+    catch (e) {
+        const status = e?.errorCode || 500;
+        const errorMessage = e?.message || "Failed to fetch products of the given category.";
+
+        throw new HttpException(status, errorMessage);
+    }
+}
+
 module.exports = {
     createNewProduct,
-    getAllProductsOfCategory
+    getAllProductsOfCategory,
+    deleteProduct
 }
