@@ -24,7 +24,7 @@ const categorySchema = new mongoose.Schema(
     }
 )
 
-categorySchema.pre("save", async function () {
+categorySchema.pre("save", function () {
     if (this.isModified('name')) {
         this.slug = this.name
             .toLowerCase()
