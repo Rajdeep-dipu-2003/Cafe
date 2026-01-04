@@ -30,7 +30,8 @@ adminRouter.post("/delete-product", async(req, res) => {
     }
 });
 
-adminRouter.get("/get-all-products/:category", async (req, res) => {
+// To get all products of a specific category
+adminRouter.get("/get-all-products", async (req, res) => {
     try {        
         const allProductsOfCategory = await adminController.getAllProductsOfCategory(req, res);
         
