@@ -33,10 +33,7 @@ adminRouter.post("/delete-product", async(req, res) => {
 // To get all products of a specific category
 adminRouter.get("/get-all-products", async (req, res) => {
     try {        
-        const allProductsOfCategory = await adminController.getAllProductsOfCategory(req, res);
-        
-        // TODO : Add pageing
-        return res.status(200).json({ products : allProductsOfCategory});
+        await adminController.getAllProductsOfCategory(req, res);
     }
     catch(e) {
         res
@@ -48,8 +45,6 @@ adminRouter.get("/get-all-products", async (req, res) => {
 adminRouter.post("/create-new-category", async (req, res) => {
     try {
         await adminController.createNewCategory(req, res);
-
-        return res.status(200).json({ message: "New category created successfully."})
     }
     catch(e) {
         res
