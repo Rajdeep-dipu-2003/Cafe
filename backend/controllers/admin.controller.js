@@ -14,7 +14,7 @@ class AdminController {
 
             return res.status(201).json({
                 success: true,
-                data: newProduct,
+                message: "New Product Created Successfully!"
             });
         }
         catch (e) {
