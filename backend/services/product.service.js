@@ -1,18 +1,30 @@
+const Category = require("../models/Category.model");
 const HttpException = require("../models/http-exception");
 const Product = require("../models/Product.model")
 
-async function createNewProduct(newProduct) {
+async function createNewProduct(productDto) {
 
     try {
-        const prouduct = await Product.find({ name: newProduct.name });
+        const prouduct = await Product.findOne({ name: productDto.name });
 
         if (prouduct) {
             throw new HttpException(400, "Product with the same name already exists");
         }
 
-        const newProductCreated = await Product.create(newProduct)
+        const category = await Category.findOne({ _id: productDto.categoryId });
 
-        return newProductCreated;
+        if (!category) {
+            throw new HttpException(400, "No relevant category found.");
+        }
+
+        return Product.create({
+            name: productDto.name,
+            price: productDto.price,
+            category: category._id,
+            imageUrl: productDto.imageUrl,
+            description: productDto.description,
+            tags: productDto.tags
+        });
 
     }
     catch (e) {
