@@ -5,12 +5,13 @@ const HttpException = require("../models/http-exception.js");
 const Product = require("../models/Product.model.js");
 const Category = require("../models/Category.model.js")
 const productService = require("../services/product.service.js");
+const categoryService = require("../services/category.service.js")
 
 class AdminController {
     async addProduct(req, res) {
         try {
             const productDto = ProductDTO.fromRequest(req.body);
-            const newProduct = await productService.createNewProduct(productDto);
+            await productService.createNewProduct(productDto);
 
             return res.status(201).json({
                 success: true,
@@ -41,29 +42,25 @@ class AdminController {
 
     async getAllProductsOfCategory(req, res) {
         try {
-            const { category } = req.params;
-            const products = Product.find({ category: category });
-            
-            return products;
+            const { categoryName } = req.query;
+            const allProductsOfCategory = await productService.getAllProductsOfCategory(categoryName);
+
+            return res.status(200).json({ products : allProductsOfCategory});
         }
         catch(e) {
-            throw new HttpException(500, "Failed To fetch products of the given category.")
+            const status = e?.errorCode || 500;
+            const errorMessage = e?.message || "Failed to fetch products of the given category.";
+
+            throw new HttpException(status, errorMessage);
         }
     }
 
     async createNewCategory(req, res) {
         try {
             const categoryDto = CategoryDto.fromRequest(req.body);
+            await categoryService.createNewCategory(categoryDto);
 
-            const categoryAlreadyExists = await Category.findOne({ name: categoryDto.name });
-
-            if (categoryAlreadyExists) {
-                throw new HttpException(409, "The category already exists.");
-            }
-
-            await Category.create(categoryDto);
-
-            return;
+            return res.status(200).json({ message: "New category created successfully."})
         }
         catch(e) {
 
