@@ -17,6 +17,9 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import OrderHistory from "./OrderHistory";
+import ViewProducts from "./ViewProducts";
+import CreateCategory from "./CreateCategory";
+import CreateProduct from "./CreateProduct";
 
 const drawerWidth = 240;
 
@@ -113,6 +116,9 @@ function AdminNavigator({ children }) {
         {children || (
           <Typography variant="h5">
             {activePage === "Orders" && <OrderHistory/>}
+            {activePage === "View Products" && <ViewProducts/>}
+            {activePage === "Create Category" && <CreateCategory/>}
+            {activePage === "Create Product" && <CreateProduct/>}
           </Typography>
         )}
       </Box>
