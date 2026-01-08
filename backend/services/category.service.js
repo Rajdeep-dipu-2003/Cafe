@@ -21,6 +21,20 @@ async function createNewCategory(categoryDto) {
     }
 }
 
+async function getAllCategories() {
+    try {
+        const allCategories = await Category.find({});
+
+        return allCategories;
+    }
+    catch (e) {
+        const status = e?.errorCode || 500;
+        const message = e?.message || "Error while fetching all categories.";
+        throw new HttpException(status, message);
+    }
+}
+
 module.exports = {
-    createNewCategory
+    createNewCategory,
+    getAllCategories
 }

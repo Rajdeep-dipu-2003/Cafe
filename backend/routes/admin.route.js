@@ -33,6 +33,19 @@ adminRouter.post("/delete-product", async (req, res) => {
     }
 });
 
+// To get all categories
+
+adminRouter.get("/get-all-categories", async (req, res) => {
+    try {
+        await adminController.getAllCategories(req, res);
+    }
+    catch (e) {
+        res
+            .status(e?.errorCode || 500)
+            .json({ error: e?.message || "Inernal Server Error" })
+    }
+})
+
 // To get all products of a specific category
 adminRouter.get("/get-all-products", async (req, res) => {
     try {

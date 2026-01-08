@@ -83,11 +83,28 @@ class AdminController {
             const allOrders = await orderService.getAllOrder();
 
             res.status(200).json({ 
-                message : "Successfully fetched all category.",
+                message : "Successfully fetched all orders.",
                 orders: allOrders
             })
         }
         catch(e) {
+            const status = e?.errorCode || 500;
+            const errorMessage = e?.message || "Inernal Server Error";
+
+            throw new HttpException(status, errorMessage);
+        }
+    }
+
+    async getAllCategories(req, res) {
+        try {
+            const allCategories = await categoryService.getAllCategories();
+
+            res.status(200).json({ 
+                message : "Successfully fetched all categories.",
+                categories: allCategories
+            })
+        }
+        catch (e) {
             const status = e?.errorCode || 500;
             const errorMessage = e?.message || "Inernal Server Error";
 
