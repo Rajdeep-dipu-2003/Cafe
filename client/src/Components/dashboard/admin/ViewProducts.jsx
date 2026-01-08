@@ -1,37 +1,77 @@
-function ViewProducts() {
-  // HARD-CODED DATA (UI ONLY)
-  const categories = [
-    { id: "cat-1", name: "Biryani" },
-    { id: "cat-2", name: "Pizza" },
-    { id: "cat-3", name: "Burgers" },
-    { id: "cat-4", name: "Desserts" },
-    { id: "cat-5", name: "Beverages" },
-    { id: "cat-6", name: "Snacks" },
-  ];
+import { useState, useEffect } from "react"
 
-  const products = [
-    {
-      id: "prod-1",
-      name: "Chicken Biryani",
-      price: 250,
-      stock: 20,
-      image: "https://via.placeholder.com/150",
-    },
-    {
-      id: "prod-2",
-      name: "Veg Biryani",
-      price: 200,
-      stock: 15,
-      image: "https://via.placeholder.com/150",
-    },
-    {
-      id: "prod-3",
-      name: "Special Biryani",
-      price: 320,
-      stock: 8,
-      image: "https://via.placeholder.com/150",
-    },
-  ];
+import axios from "axios";
+
+function ViewProducts() {
+
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const getAllCategories = async () => {
+      const response = await axios.get("http://localhost:8000/api/v1/admin/get-all-categories");
+
+      // console.log(response.data.categories);
+
+      setCategories(response.data.categories);
+    }
+
+    getAllCategories();
+  }, [])
+
+  const handleCategoryChange = async (e) => {
+    const newCategory = e.target.value;
+
+    if (newCategory == null || newCategory == undefined) {
+      return;
+    }
+
+    setSelectedCategory(newCategory);
+    console.log("new cat: ", newCategory);
+    
+    const response = await axios.get("http://localhost:8000/api/v1/admin/get-all-products", {
+      params: {
+        categoryName: newCategory
+      }
+    });
+    
+    setProducts(response.data.products);
+  }
+
+  // HARD-CODED DATA (UI ONLY)
+  // const categories = [
+  //   { id: "cat-1", name: "Biryani" },
+  //   { id: "cat-2", name: "Pizza" },
+  //   { id: "cat-3", name: "Burgers" },
+  //   { id: "cat-4", name: "Desserts" },
+  //   { id: "cat-5", name: "Beverages" },
+  //   { id: "cat-6", name: "Snacks" },
+  // ];
+
+  // const products = [
+  //   {
+  //     id: "prod-1",
+  //     name: "Chicken Biryani",
+  //     price: 250,
+  //     stock: 20,
+  //     image: "https://via.placeholder.com/150",
+  //   },
+  //   {
+  //     id: "prod-2",
+  //     name: "Veg Biryani",
+  //     price: 200,
+  //     stock: 15,
+  //     image: "https://via.placeholder.com/150",
+  //   },
+  //   {
+  //     id: "prod-3",
+  //     name: "Special Biryani",
+  //     price: 320,
+  //     stock: 8,
+  //     image: "https://via.placeholder.com/150",
+  //   },
+  // ];
 
   return (
     <div className="min-h-screen bg-gray-100 px-6 py-6">
@@ -52,11 +92,12 @@ function ViewProducts() {
         </label>
 
         <select
+          onChange={handleCategoryChange}
           className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="">-- Select Category --</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
+          {categories && categories.map((category) => (
+            <option key={category.id} value={category.name}>
               {category.name}
             </option>
           ))}
@@ -68,7 +109,7 @@ function ViewProducts() {
       {/* ===================== */}
       <div>
         <h2 className="text-lg font-medium mb-3">
-          Products in Biryani
+          Products in {selectedCategory}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -78,7 +119,7 @@ function ViewProducts() {
               className="bg-white border rounded-md p-3 flex gap-3 items-center"
             >
               <img
-                src={product.image}
+                src={product.imageUrl}
                 alt={product.name}
                 className="h-14 w-14 rounded object-cover"
               />
@@ -86,7 +127,7 @@ function ViewProducts() {
               <div className="flex-1">
                 <p className="text-sm font-medium">{product.name}</p>
                 <p className="text-xs text-gray-500">
-                  ₹{product.price} · Stock: {product.stock}
+                  ₹{product.price}
                 </p>
               </div>
 
