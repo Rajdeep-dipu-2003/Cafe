@@ -6,6 +6,7 @@ const Product = require("../models/Product.model.js");
 const Category = require("../models/Category.model.js")
 const productService = require("../services/product.service.js");
 const categoryService = require("../services/category.service.js")
+const orderService = require("../services/order.service.js")
 
 class AdminController {
     async addProduct(req, res) {
@@ -70,6 +71,23 @@ class AdminController {
 
             // TODO : add centrilized error middleware
 
+            const status = e?.errorCode || 500;
+            const errorMessage = e?.message || "Inernal Server Error";
+
+            throw new HttpException(status, errorMessage);
+        }
+    }
+
+    async getAllOrder(req, res) {
+        try {
+            const allOrders = await orderService.getAllOrder();
+
+            res.status(200).json({ 
+                message : "Successfully fetched all category.",
+                orders: allOrders
+            })
+        }
+        catch(e) {
             const status = e?.errorCode || 500;
             const errorMessage = e?.message || "Inernal Server Error";
 
