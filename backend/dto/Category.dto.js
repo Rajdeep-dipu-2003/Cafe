@@ -3,7 +3,6 @@ const HttpException = require("../models/http-exception.js")
 
 const categorySchema = z.object({
     name: z.string().min(1),
-    imageUrl: z.string().min(1)
 });
 
 class CategoryDto {

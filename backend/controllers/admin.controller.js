@@ -7,6 +7,7 @@ const Category = require("../models/Category.model.js")
 const productService = require("../services/product.service.js");
 const categoryService = require("../services/category.service.js")
 const orderService = require("../services/order.service.js")
+const cloudinaryService = require("../services/cloudinary.service.js")
 
 class AdminController {
     async addProduct(req, res) {
@@ -50,9 +51,9 @@ class AdminController {
             const { categoryName } = req.query;
             const allProductsOfCategory = await productService.getAllProductsOfCategory(categoryName);
 
-            return res.status(200).json({ products : allProductsOfCategory});
+            return res.status(200).json({ products: allProductsOfCategory });
         }
-        catch(e) {
+        catch (e) {
             const status = e?.errorCode || 500;
             const errorMessage = e?.message || "Failed to fetch products of the given category.";
 
@@ -63,11 +64,19 @@ class AdminController {
     async createNewCategory(req, res) {
         try {
             const categoryDto = CategoryDto.fromRequest(req.body);
-            await categoryService.createNewCategory(categoryDto);
 
-            return res.status(200).json({ message: "New category created successfully."})
+
+            if (!req.file) {
+                return res.status(400).json({ message: "Category image is required" });
+            }
+
+            const imageUrl = await cloudinaryService.uploadToCloudinary(req.file);
+
+            await categoryService.createNewCategory({...categoryDto, imageUrl});
+
+            return res.status(200).json({ message: "New category created successfully." })
         }
-        catch(e) {
+        catch (e) {
 
             // TODO : add centrilized error middleware
 
@@ -82,12 +91,12 @@ class AdminController {
         try {
             const allOrders = await orderService.getAllOrder();
 
-            res.status(200).json({ 
-                message : "Successfully fetched all orders.",
+            res.status(200).json({
+                message: "Successfully fetched all orders.",
                 orders: allOrders
             })
         }
-        catch(e) {
+        catch (e) {
             const status = e?.errorCode || 500;
             const errorMessage = e?.message || "Inernal Server Error";
 
@@ -99,8 +108,8 @@ class AdminController {
         try {
             const allCategories = await categoryService.getAllCategories();
 
-            res.status(200).json({ 
-                message : "Successfully fetched all categories.",
+            res.status(200).json({
+                message: "Successfully fetched all categories.",
                 categories: allCategories
             })
         }
