@@ -3,6 +3,7 @@ const express = require("express")
 const dotenv = require("dotenv")
 const cors = require("cors")
 const v1_router = require("./routes")
+const cloudinaryService = require("./services/cloudinary.service")
 
 const {checkDatabaseConnection} = require("./middlewares/databaseConnectionCheckMiddleware")
 
@@ -26,9 +27,12 @@ mongoose.connect(process.env.MONGO_CONNECTION_STRING)
     .then(() => {
         console.log("Connected to the mongodb");
 
+        cloudinaryService.configureCloudinary();
+        
         app.listen(8000, () => {
             console.log("Express server started at port 8000")
         })
+
     })
     .catch((error) => {
         console.error("Failed to connect to the backend server:", error);
