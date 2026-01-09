@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
+import toast, { Toaster } from 'react-hot-toast';
 
 function CreateCategory() {
     const [imagePreview, setImagePreview] = useState(null);
+    const [image, setImage] = useState(null);
+    const [categoryName, setCategoryName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const preventDefault = (e) => e.preventDefault();
@@ -15,13 +20,13 @@ function CreateCategory() {
         }
     }, [])
 
-
     const handleDrop = (e) => {
         e.preventDefault();
 
-        const droppendFile = e.dataTransfer.files[0];
-        const previewUrl = URL.createObjectURL(droppendFile);
+        const droppedFile = e.dataTransfer.files[0];
+        setImage(droppedFile);
 
+        const previewUrl = URL.createObjectURL(droppedFile);
         setImagePreview(previewUrl);
     }
 
@@ -32,6 +37,8 @@ function CreateCategory() {
             return;
         }
 
+        setImage(file);
+
         const previewUrl = URL.createObjectURL(file);
 
         setImagePreview(previewUrl);
@@ -39,10 +46,60 @@ function CreateCategory() {
 
     const handleRemoveImage = () => {
         setImagePreview(null);
+        setImage(null);
     }
+
+const handleCreateNewCategory = async (e) => {
+    e.preventDefault();
+
+    if (loading) {
+        // console.log("Loaind");
+        return;
+    }
+
+    // 1. Basic client-side validation
+    if (!categoryName || !image) {
+        // console.log("missing image or name");
+        return toast.error("Please provide both a name and an image");
+    }
+
+    setLoading(true);
+
+    try {
+        const formData = new FormData();
+        formData.append("image", image);
+        formData.append("name", categoryName);
+
+        const response = await axios.post(
+            "http://localhost:8000/api/v1/admin/create-new-category",
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
+
+        // Axios only reaches this line if status is 2xx
+        toast.success("Successfully Created");
+        // console.log(response.data);
+
+    } catch (error) {
+        // 2. Handle the 400 error here
+        // console.log(error);
+        // console.error("Error Response:", error.response?.data);
+        
+        const errorMessage = error.response?.data?.message || "Error creating category";
+        toast.error(errorMessage);
+    } finally {
+        // 3. This runs whether the request succeeded OR failed
+        setLoading(false);
+    }
+};
 
     return (
         <div className="min-h-screen bg-gray-100 flex justify-center py-10">
+            <Toaster position="top-center" reverseOrder={false} />
             <div className="w-full max-w-3xl bg-white rounded-lg shadow-md p-8">
 
                 {/* Header */}
@@ -60,6 +117,8 @@ function CreateCategory() {
                         </label>
                         <input
                             type="text"
+                            value={categoryName}
+                            onChange={e => setCategoryName(e.target.value)}
                             placeholder="e.g. Burgers"
                             className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-neutral-800"
                         />
@@ -129,9 +188,15 @@ function CreateCategory() {
                         </button>
                         <button
                             type="submit"
-                            className="rounded-md bg-neutral-800 px-6 py-2 text-sm text-white hover:bg-neutral-700"
+                            onClick={handleCreateNewCategory}
+                            disabled={loading} // Prevents clicks while loading
+                            className={`rounded-md px-6 py-2 text-sm text-white transition-all 
+                                ${loading
+                                    ? 'bg-neutral-500 cursor-not-allowed opacity-70'
+                                    : 'bg-neutral-800 hover:bg-neutral-700'
+                                }`}
                         >
-                            Create Category
+                            {loading ? 'Creating...' : 'Create Category'}
                         </button>
                     </div>
 
