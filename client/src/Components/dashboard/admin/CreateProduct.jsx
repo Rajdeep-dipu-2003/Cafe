@@ -1,7 +1,32 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
+import toast, { Toaster } from 'react-hot-toast';
 
 function CreateProduct() {
     const [imagePreview, setImagePreview] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const [productFormData, setProductFormData] = useState({
+        image: null,
+        category: "",
+        name: "",
+        price: "",
+        description: "",
+        tags: ""
+    })
+
+    useEffect(() => {
+        const getAllCategories = async () => {
+            const response = await axios.get("http://localhost:8000/api/v1/admin/get-all-categories");
+
+            // console.log(response.data.categories);
+
+            setCategories(response.data.categories);
+        }
+
+        getAllCategories();
+    }, []);
 
     useEffect(() => {
 
@@ -23,9 +48,14 @@ function CreateProduct() {
         const file = e.dataTransfer.files[0];
 
         if (!file) {
-            console.log("Not a file dropped !!!");
+            // console.log("Not a file dropped !!!");
             return;
         }
+
+        setProductFormData(prev => ({
+            ...prev,
+            image: file
+        }))
 
         const previewUrl = URL.createObjectURL(file);
         setImagePreview(previewUrl);
@@ -38,6 +68,11 @@ function CreateProduct() {
             return;
         }
 
+        setProductFormData(prev => ({
+            ...prev,
+            image: file
+        }))
+
         const previewUrl = URL.createObjectURL(file);
 
         setImagePreview(previewUrl);
@@ -45,6 +80,56 @@ function CreateProduct() {
 
     const handleRemoveImage = () => {
         setImagePreview(null);
+    }
+
+    const handleCreateNewProduct = async (e) => {
+        e.preventDefault();
+
+        if (loading) {
+            return;
+        }
+
+        const requiredFields = ["category", "description", "image", "name", "price"];
+
+        const isValid = requiredFields.every(
+            field => Boolean(productFormData[field])
+        );
+
+        if (!isValid) {
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const formData = new FormData();
+
+            requiredFields.forEach(feild => {
+                formData.append(feild, productFormData[feild]);
+            });
+
+            const response = await axios.post(
+                "http://localhost:8000/api/v1/admin/create-new-product",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+
+            );
+
+            toast.success("Successfully Created");
+
+        }
+        catch (e) {
+            const errorMessage = error.response?.data?.message || "Error creating product";
+            toast.error(errorMessage);
+        }
+        finally {
+            setLoading(false);
+        }
+
     }
 
     return (
@@ -66,6 +151,8 @@ function CreateProduct() {
                         </label>
                         <input
                             type="text"
+                            value={productFormData.name}
+                            onChange={e => setProductFormData(prev => ({ ...prev, name: e.target.value }))}
                             placeholder="e.g. cheese burger"
                             className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-neutral-800"
                         />
@@ -78,6 +165,8 @@ function CreateProduct() {
                         </label>
                         <input
                             type="number"
+                            value={productFormData.price}
+                            onChange={e => setProductFormData(prev => ({ ...prev, price: e.target.value }))}
                             placeholder="0.00"
                             min="0"
                             className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-neutral-800"
@@ -90,12 +179,18 @@ function CreateProduct() {
                             Category
                         </label>
                         <select
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-neutral-800"
+                            onChange={e => setProductFormData(prev => ({
+                                ...prev,
+                                category: e.target.value
+                            }))}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                         >
-                            <option value="">Select a category</option>
-                            <option>Electronics</option>
-                            <option>Clothing</option>
-                            <option>Home Appliances</option>
+                            <option value="">-- Select Category --</option>
+                            {categories && categories.map((category) => (
+                                <option key={category.id} value={category.name}>
+                                    {category.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
@@ -106,6 +201,8 @@ function CreateProduct() {
                         </label>
                         <input
                             type="text"
+                            value={productFormData.tags}
+                            onChange={e => setProductFormData(prev => ({ ...prev, tags: e.target.value }))}
                             placeholder="e.g. if product is cheese burger, tags can be cheese, burger"
                             className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-neutral-800"
                         />
@@ -121,6 +218,8 @@ function CreateProduct() {
                         </label>
                         <textarea
                             rows="5"
+                            value={productFormData.description}
+                            onChange={e => setProductFormData(prev => ({ ...prev, description: e.target.value }))}
                             placeholder="Product description (max 5000 characters)"
                             className="w-full rounded-md border border-gray-300 px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-neutral-800"
                         />
@@ -179,16 +278,16 @@ function CreateProduct() {
                     {/* Actions */}
                     <div className="flex justify-end gap-3 pt-4">
                         <button
-                            type="button"
-                            className="rounded-md border border-gray-300 px-5 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                            Cancel
-                        </button>
-                        <button
                             type="submit"
-                            className="rounded-md bg-neutral-800 px-6 py-2 text-sm text-white hover:bg-neutral-700"
+                            onClick={handleCreateNewProduct}
+                            disabled={loading} // Prevents clicks while loading
+                            className={`rounded-md px-6 py-2 text-sm text-white transition-all 
+                                ${loading
+                                    ? 'bg-neutral-500 cursor-not-allowed opacity-70'
+                                    : 'bg-neutral-800 hover:bg-neutral-700'
+                                }`}
                         >
-                            Create Product
+                            {loading ? 'Creating...' : 'Create Product'}
                         </button>
                     </div>
 
