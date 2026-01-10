@@ -9,7 +9,7 @@ function CreateProduct() {
 
     const [productFormData, setProductFormData] = useState({
         image: null,
-        category: "",
+        categoryId: "",
         name: "",
         price: "",
         description: "",
@@ -80,22 +80,30 @@ function CreateProduct() {
 
     const handleRemoveImage = () => {
         setImagePreview(null);
+        setProductFormData(prev => ({
+            ...prev,
+            image: null
+        }));
     }
 
     const handleCreateNewProduct = async (e) => {
         e.preventDefault();
 
         if (loading) {
+            console.log("loading...")
             return;
         }
 
-        const requiredFields = ["category", "description", "image", "name", "price"];
+        const requiredFields = ["categoryId", "description", "image", "name", "price"];
 
-        const isValid = requiredFields.every(
-            field => Boolean(productFormData[field])
-        );
+        const isValid = requiredFields.every(field => {
+            return Boolean(productFormData[field]);
+        });
+
+        // requiredFields.forEach(feild => console.log(`value of ${feild} is ${productFormData[feild]}`));
 
         if (!isValid) {
+            console.log("INvalud feilds")
             return;
         }
 
@@ -104,12 +112,12 @@ function CreateProduct() {
         try {
             const formData = new FormData();
 
-            requiredFields.forEach(feild => {
-                formData.append(feild, productFormData[feild]);
+            requiredFields.forEach(field => {
+                formData.append(field, productFormData[field]);
             });
 
             const response = await axios.post(
-                "http://localhost:8000/api/v1/admin/create-new-product",
+                "http://localhost:8000/api/v1/admin/add-product",
                 formData,
                 {
                     headers: {
@@ -119,10 +127,12 @@ function CreateProduct() {
 
             );
 
+            console.log(response);
+
             toast.success("Successfully Created");
 
         }
-        catch (e) {
+        catch (error) {
             const errorMessage = error.response?.data?.message || "Error creating product";
             toast.error(errorMessage);
         }
@@ -134,6 +144,9 @@ function CreateProduct() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex justify-center py-10">
+
+            <Toaster/>
+
             <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-8">
 
                 {/* Header */}
@@ -166,7 +179,7 @@ function CreateProduct() {
                         <input
                             type="number"
                             value={productFormData.price}
-                            onChange={e => setProductFormData(prev => ({ ...prev, price: e.target.value }))}
+                            onChange={e => setProductFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
                             placeholder="0.00"
                             min="0"
                             className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-neutral-800"
@@ -179,15 +192,18 @@ function CreateProduct() {
                             Category
                         </label>
                         <select
-                            onChange={e => setProductFormData(prev => ({
-                                ...prev,
-                                category: e.target.value
-                            }))}
+                            value={productFormData.categoryId}
+                            onChange={e =>
+                                setProductFormData(prev => ({
+                                    ...prev,
+                                    categoryId: e.target.value
+                                }))
+                            }
                             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                         >
                             <option value="">-- Select Category --</option>
                             {categories && categories.map((category) => (
-                                <option key={category.id} value={category.name}>
+                                <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
                             ))}
