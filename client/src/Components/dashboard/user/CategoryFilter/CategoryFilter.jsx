@@ -23,7 +23,7 @@ function CategoryFilter() {
 
       <div
         className="
-          flex gap-6
+          flex gap-10
           overflow-x-auto
           scrollbar-hide
           justify-center

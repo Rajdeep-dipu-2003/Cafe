@@ -3,15 +3,17 @@ function CategoryItem({ image, label }) {
     <button
       className="
         flex flex-col items-center gap-2
-        min-w-[80px]
-        hover:scale-105 transition
+        w-[100px]
+        h-64
         focus:outline-none
       "
     >
       <div
         className="
           w-36
+          hover:scale-105 transition
           overflow-hidden
+          scrollbar-hide
         "
       >
         <img
