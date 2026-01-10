@@ -1,5 +1,6 @@
 const express = require("express");
 const adminRouter = express.Router();
+const multer = require("multer");
 
 const authorizeAdmin = require("../middlewares/authorization.middleware")
 const authenticateUser = require("../middlewares/authentication.middleware")
@@ -8,10 +9,13 @@ const AdminController = require("../controllers/admin.controller");
 const Order = require("../models/Order.model");
 const adminController = new AdminController();
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 // adminRouter.use(authenticateUser)
 // adminRouter.use(authorizeAdmin);
 
-adminRouter.post("/add-product", async (req, res) => {
+adminRouter.post("/add-product", upload.single('image'), async (req, res) => {
     try {
         await adminController.addProduct(req, res);
     }
@@ -33,32 +37,7 @@ adminRouter.post("/delete-product", async (req, res) => {
     }
 });
 
-// To get all categories
-
-adminRouter.get("/get-all-categories", async (req, res) => {
-    try {
-        await adminController.getAllCategories(req, res);
-    }
-    catch (e) {
-        res
-            .status(e?.errorCode || 500)
-            .json({ error: e?.message || "Inernal Server Error" })
-    }
-})
-
-// To get all products of a specific category
-adminRouter.get("/get-all-products", async (req, res) => {
-    try {
-        await adminController.getAllProductsOfCategory(req, res);
-    }
-    catch (e) {
-        res
-            .status(e?.errorCode || 500)
-            .json({ error: e?.message || "Inernal Server Error" })
-    }
-});
-
-adminRouter.post("/create-new-category", async (req, res) => {
+adminRouter.post("/create-new-category", upload.single('image'),  async (req, res) => {
     try {
         await adminController.createNewCategory(req, res);
     }

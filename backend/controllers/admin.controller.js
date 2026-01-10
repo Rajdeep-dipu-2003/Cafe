@@ -13,7 +13,23 @@ class AdminController {
     async addProduct(req, res) {
         try {
             const productDto = ProductDTO.fromRequest(req.body);
-            await productService.createNewProduct(productDto);
+
+            if (!req.file) {
+                return res.status(400).json({
+                    status: "Fail",
+                    message: "Category image is required" 
+                });
+            }
+
+            const imageUrl = await cloudinaryService.uploadToCloudinary(req.file);
+
+            const productTags = [];
+
+            if (req.body.tags) {
+                productTags = tags.split(",");
+            }
+
+            await productService.createNewProduct({...productDto, imageUrl, tags : productTags});
 
             return res.status(201).json({
                 success: true,
@@ -46,28 +62,16 @@ class AdminController {
 
     }
 
-    async getAllProductsOfCategory(req, res) {
-        try {
-            const { categoryName } = req.query;
-            const allProductsOfCategory = await productService.getAllProductsOfCategory(categoryName);
-
-            return res.status(200).json({ products: allProductsOfCategory });
-        }
-        catch (e) {
-            const status = e?.errorCode || 500;
-            const errorMessage = e?.message || "Failed to fetch products of the given category.";
-
-            throw new HttpException(status, errorMessage);
-        }
-    }
-
     async createNewCategory(req, res) {
         try {
             const categoryDto = CategoryDto.fromRequest(req.body);
 
 
             if (!req.file) {
-                return res.status(400).json({ message: "Category image is required" });
+                return res.status(400).json({
+                    status: "Fail",
+                    message: "Category image is required" 
+                });
             }
 
             const imageUrl = await cloudinaryService.uploadToCloudinary(req.file);
@@ -94,23 +98,6 @@ class AdminController {
             res.status(200).json({
                 message: "Successfully fetched all orders.",
                 orders: allOrders
-            })
-        }
-        catch (e) {
-            const status = e?.errorCode || 500;
-            const errorMessage = e?.message || "Inernal Server Error";
-
-            throw new HttpException(status, errorMessage);
-        }
-    }
-
-    async getAllCategories(req, res) {
-        try {
-            const allCategories = await categoryService.getAllCategories();
-
-            res.status(200).json({
-                message: "Successfully fetched all categories.",
-                categories: allCategories
             })
         }
         catch (e) {
