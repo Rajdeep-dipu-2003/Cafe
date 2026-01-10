@@ -1,6 +1,7 @@
 const Category = require("../models/Category.model");
-const HttpException = require("../models/http-exception");
 const Product = require("../models/Product.model")
+
+const HttpException = require("../models/http-exception");
 
 async function createNewProduct(productDto) {
 
@@ -35,15 +36,9 @@ async function createNewProduct(productDto) {
 }
 
 // TODO : Replace category name with mongoose document id instead since name might change but category wont
-async function getAllProductsOfCategory(categoryName) {
+async function getAllProductsOfCategory(categoryId) {
     try {
-        const category = await Category.findOne({ name: categoryName });
-
-        if (!category) {
-            throw new HttpException(400, "No relevant category found.");
-        }
-
-        const products = await Product.find({ category: category._id });
+        const products = await Product.find({ category: categoryId });
 
         return products;
     } catch (e) {
@@ -57,11 +52,11 @@ async function getAllProductsOfCategory(categoryName) {
 async function deleteProduct(productId) {
     try {
         if (productId === null || productId === undefined) {
-            throw new HttpException(400, "Invalid product Id.") 
+            throw new HttpException(400, "Invalid product Id.")
         }
 
-        const result = await Product.deleteOne({ _id : productId});
-        
+        const result = await Product.deleteOne({ _id: productId });
+
         if (result.deletedCount === 0) {
             throw new HttpException(400, "Give Product might be already deleted.")
         }
@@ -74,8 +69,25 @@ async function deleteProduct(productId) {
     }
 }
 
+async function getPopularProducts() {
+    try {
+        const popularProducts = await Product.find({})
+            .sort({ orderCount: -1 })
+            .limit(6);
+
+        return popularProducts;
+    }
+    catch (e) {
+        const status = e?.errorCode || 500;
+        const errorMessage = e?.message || "Failed to fetch products of the given category.";
+
+        throw new HttpException(status, errorMessage);
+    }
+}
+
 module.exports = {
     createNewProduct,
     getAllProductsOfCategory,
-    deleteProduct
+    deleteProduct,
+    getPopularProducts
 }

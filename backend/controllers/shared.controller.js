@@ -23,8 +23,8 @@ class SharedController {
 
     async getAllProductsOfCategory(req, res) {
         try {
-            const { categoryName } = req.query;
-            const allProductsOfCategory = await productService.getAllProductsOfCategory(categoryName);
+            const { categoryId } = req.query;
+            const allProductsOfCategory = await productService.getAllProductsOfCategory(categoryId);
 
             return res.status(200).json({ products: allProductsOfCategory });
         }
