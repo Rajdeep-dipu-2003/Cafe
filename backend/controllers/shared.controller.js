@@ -35,6 +35,20 @@ class SharedController {
             throw new HttpException(status, errorMessage);
         }
     }
+
+    async getPopularProducts(req, res) {
+        try {
+            const popularProducts = await productService.getPopularProducts();
+
+            return res.status(200).json({ popularProducts : popularProducts });
+        }
+        catch (e) {
+            const status = e?.errorCode || 500;
+            const errorMessage = e?.message || "Failed to fetch products of the given category.";
+
+            throw new HttpException(status, errorMessage);
+        }
+    }
 };
 
 module.exports = SharedController
