@@ -10,7 +10,7 @@ function ViewProducts() {
 
   useEffect(() => {
     const getAllCategories = async () => {
-      const response = await axios.get("http://localhost:8000/api/v1/admin/get-all-categories");
+      const response = await axios.get("http://localhost:8000/api/v1/shared/get-all-categories");
 
       // console.log(response.data.categories);
 
@@ -21,18 +21,18 @@ function ViewProducts() {
   }, [])
 
   const handleCategoryChange = async (e) => {
-    const newCategory = e.target.value;
+    const categoryId = e.target.value;
 
-    if (newCategory == null || newCategory == undefined) {
+    if (!categoryId) {
       return;
     }
 
-    setSelectedCategory(newCategory);
-    console.log("new cat: ", newCategory);
+    setSelectedCategory(categoryId);
+    console.log("catId: ", categoryId);
     
-    const response = await axios.get("http://localhost:8000/api/v1/admin/get-all-products", {
+    const response = await axios.get("http://localhost:8000/api/v1/shared/get-all-products", {
       params: {
-        categoryName: newCategory
+        categoryId: categoryId
       }
     });
     
@@ -97,7 +97,7 @@ function ViewProducts() {
         >
           <option value="">-- Select Category --</option>
           {categories && categories.map((category) => (
-            <option key={category.id} value={category.name}>
+            <option key={category._id} value={category._id}>
               {category.name}
             </option>
           ))}
@@ -109,7 +109,7 @@ function ViewProducts() {
       {/* ===================== */}
       <div>
         <h2 className="text-lg font-medium mb-3">
-          Products in {selectedCategory}
+          Products
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
