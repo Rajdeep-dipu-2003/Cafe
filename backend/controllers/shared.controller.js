@@ -40,7 +40,27 @@ class SharedController {
         try {
             const popularProducts = await productService.getPopularProducts();
 
-            return res.status(200).json({ popularProducts : popularProducts });
+            return res.status(200).json({ popularProducts: popularProducts });
+        }
+        catch (e) {
+            const status = e?.errorCode || 500;
+            const errorMessage = e?.message || "Failed to fetch products of the given category.";
+
+            throw new HttpException(status, errorMessage);
+        }
+    }
+
+    async getProductsByQuery(req, res) {
+        try {
+            const query = req.query.searchQuery;
+
+            if (!query) {
+                return res.status(400).json({ products: [] });
+            }
+
+            const products = await productService.getProducts(query);
+
+            return res.status(200).json({ products: products });
         }
         catch (e) {
             const status = e?.errorCode || 500;

@@ -39,4 +39,17 @@ sharedRouter.get("/get-popular-products", async (req, res) => {
     }
 })
 
+sharedRouter.get("/get-products-by-query", async (req, res) => {
+    try {
+        await sharedController.getProductsByQuery(req, res);
+    }
+    catch (e) {
+        res
+            .status(e?.errorCode || 500)
+            .json({ error: e?.message || "Inernal Server Error" })
+    }
+})
+
+
+
 module.exports = sharedRouter;
