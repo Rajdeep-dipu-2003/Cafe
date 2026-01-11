@@ -1,37 +1,107 @@
-// ProductView.jsx
-import { useState } from "react";
+import api from "@lib/axios"
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
+
 import ProductCard from "./ProductCard";
+import NoItemsFound from "./NoItemsFound";
 
 function ProductView() {
     const [showGoToCart, setShowGoToCart] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const products = [
-        {
-            id: 1,
-            name: "Chicken Biryani",
-            description: "Aromatic basmati rice cooked with tender chicken and spices.",
-            price: 250,
-            image: "https://images.unsplash.com/photo-1600628422019-36c8b71c16c9"
-        },
-        {
-            id: 2,
-            name: "Veg Pizza",
-            description: "Loaded with fresh vegetables and mozzarella cheese.",
-            price: 199,
-            image: "https://images.unsplash.com/photo-1548365328-5d7c3b7c6e3f"
-        },
-        {
-            id: 3,
-            name: "Paneer Wrap",
-            description: "Soft wrap filled with spicy paneer and veggies.",
-            price: 149,
-            image: "https://images.unsplash.com/photo-1604908177522-402f41a6c98c"
+    const [params] = useSearchParams();
+
+    const categoryId = params.get("categoryId");
+    const query = params.get("search");
+
+    useEffect(() => {
+
+        const getProductsByCategory = async () => {
+            try {
+                const response = await api.get("/shared/get-all-products", {
+                    params: {
+                        categoryId: categoryId
+                    }
+                });
+
+                setProducts(response.data.products);
+            }
+            catch (e) {
+                console.log("Error: ", e);
+            }
+            finally {
+                setLoading(false);
+            }
         }
-    ];
+
+        const getProductsBySearchQuery = async () => {
+            try {
+
+                const response = await api.get("/shared/get-products-by-query", {
+                    params: {
+                        searchQuery: query
+                    }
+                });
+
+                setProducts(response.data.products);
+            }
+            catch (e) {
+                console.log("Error: ", e);
+            }
+            finally {
+                setLoading(false);
+            }
+        }
+
+        // console.log(categoryId + " " + query);
+
+        if (categoryId) {
+            getProductsByCategory();
+        }
+        else if (query) {
+            getProductsBySearchQuery();
+        }
+        else {
+            setLoading(false);
+        }
+
+    }, [categoryId, query])
+
+
+
+    // const products = [
+    //     {
+    //         id: 1,
+    //         name: "Chicken Biryani",
+    //         description: "Aromatic basmati rice cooked with tender chicken and spices.",
+    //         price: 250,
+    //         image: "https://images.unsplash.com/photo-1600628422019-36c8b71c16c9"
+    //     },
+    //     {
+    //         id: 2,
+    //         name: "Veg Pizza",
+    //         description: "Loaded with fresh vegetables and mozzarella cheese.",
+    //         price: 199,
+    //         image: "https://images.unsplash.com/photo-1548365328-5d7c3b7c6e3f"
+    //     },
+    //     {
+    //         id: 3,
+    //         name: "Paneer Wrap",
+    //         description: "Soft wrap filled with spicy paneer and veggies.",
+    //         price: 149,
+    //         image: "https://images.unsplash.com/photo-1604908177522-402f41a6c98c"
+    //     }
+    // ];
 
     const handleAddToCart = () => {
         setShowGoToCart(true);
     };
+
+
+    if (!loading && products.length === 0) {
+        return <NoItemsFound query={params.get("search")} />;
+    }
 
     return (
         <div className="relative min-h-screen bg-gray-100 p-6">
