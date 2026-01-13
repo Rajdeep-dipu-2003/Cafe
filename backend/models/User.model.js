@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
             required: true,
         },
         phoneNumber: {
-            type: Number,
+            type: String,
             required: true,
         },
         role: {
@@ -74,13 +74,11 @@ const userSchema = new mongoose.Schema(
     }
 )
 
-userSchema.pre("save", async function(next) {
-    if (!this.isModified(this.password)) {
-        next();
+userSchema.pre("save", async function() {
+    if (this.isModified(this.password)) {
+        this.password = await bcrypt.hash(this.password, 10);
     }
 
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
 })
 
 const User = mongoose.model("User", userSchema);
