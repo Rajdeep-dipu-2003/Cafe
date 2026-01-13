@@ -1,7 +1,23 @@
 // TODO : add authentication middleware
 
 const express = require("express");
-const userRouter = express.router();
+const userRouter = express.Router();
+
+const UserController = require("../controllers/user.controller")
+const userController = new UserController();
+
+userRouter.post("/add-to-cart", async (req, res) => {
+    try {
+        await userController.addToCart(req, res);
+    }
+    catch (e) {
+        res
+            .status(e?.errorCode || 500)
+            .json({ error: e?.message || "Internal Server Error" })
+    }
+})
+
+module.exports = userRouter
 
 // routes 
 // - get all categories
