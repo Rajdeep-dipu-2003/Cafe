@@ -4,7 +4,8 @@ const cartService = require("../services/cart.service")
 class UserController {
     async addToCart(req, res) {
         try {
-            const { productId, userId } = req.body;
+            const { productId } = req.body;
+            const userId = req.user.userId;
 
             if (!productId) {
                 throw new HttpException(400, "Invalid Product Id.")
@@ -21,6 +22,17 @@ class UserController {
                 status: "Success"
             })
 
+        }
+        catch (e) {
+            res
+                .status(e?.errorCode || 500)
+                .json({ error: e?.message || "Internal Server Error" })
+        }
+    }
+
+    async checkout(req, res) {
+        try {
+            
         }
         catch (e) {
             res
