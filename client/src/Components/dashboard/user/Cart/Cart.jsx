@@ -1,47 +1,18 @@
-// CartPage.jsx
-import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { addToCart, removeFromCart } from "../../../../reduxStore/cartSlice";
 import CartItem from "./CartItem";
 
 function Cart() {
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            name: "Chicken Biryani",
-            description: "Aromatic basmati rice cooked with tender chicken.",
-            price: 250,
-            quantity: 1,
-            image: "https://images.unsplash.com/photo-1600628422019-36c8b71c16c9"
-        },
-        {
-            id: 2,
-            name: "Veg Pizza",
-            description: "Loaded with fresh vegetables and mozzarella cheese.",
-            price: 199,
-            quantity: 2,
-            image: "https://images.unsplash.com/photo-1548365328-5d7c3b7c6e3f"
-        }
-    ]);
+    const dispatch = useDispatch();
 
-    const increaseQuantity = (id) => {
-        setCartItems(items =>
-            items.map(item =>
-                item.id === id
-                    ? { ...item, quantity: item.quantity + 1 }
-                    : item
-            )
-        );
+    const cartItems = useSelector(state => state.cart.items);
+
+    const handleIncrease = (product) => {
+        dispatch(addToCart(product));
     };
 
-    const decreaseQuantity = (id) => {
-        setCartItems(items =>
-            items
-                .map(item =>
-                    item.id === id
-                        ? { ...item, quantity: item.quantity - 1 }
-                        : item
-                )
-                .filter(item => item.quantity > 0)
-        );
+    const handleDecrease = (product) => {
+        dispatch(removeFromCart(product));
     };
 
     return (
@@ -59,13 +30,12 @@ function Cart() {
                             <CartItem
                                 key={item.id}
                                 item={item}
-                                onIncrease={increaseQuantity}
-                                onDecrease={decreaseQuantity}
+                                onIncrease={() => handleIncrease(item)}
+                                onDecrease={() => handleDecrease(item)}
                             />
                         ))}
                     </div>
 
-                    {/* Checkout Button */}
                     <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-md">
                         <button className="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold">
                             Proceed to Checkout
