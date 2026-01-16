@@ -53,16 +53,22 @@ export const addToCartAsync = createAsyncThunk(
         // persist in the backend
         // TODO : update the quantity logic
         await api.post("/user/add-to-cart", {
-            product,
-            quantity: 1
+            productId: product._id,
         });
     }
 )
 
-// export const removeFromCartAsync = createAsyncThunk(
-//     "carrt/removeFromCart",
-//     async
-// )
+export const removeFromCartAsync = createAsyncThunk(
+    "carrt/removeFromCart",
+    async(product, { dispatch }) => {
+        dispatch(removeFromCart(product));
+
+        await api.post("/user/remove-from-cart", {
+            productId: product._id,
+        })
+    }
+    
+)
 
 export const { addToCart, removeFromCart } = cartSlice.actions;
 export default cartSlice.reducer;
