@@ -4,7 +4,6 @@ const HttpException = require("../models/http-exception");
 
 async function addToCart(productId, userId) {
     try {
-
         const productExists = await Product.findOne({ _id: productId });
 
         if (!productExists) {
@@ -18,7 +17,7 @@ async function addToCart(productId, userId) {
                 user: userId,
                 items: [
                     {
-                        productId,
+                        product: productId,
                         quantity: 1
                     }
                 ]
@@ -27,13 +26,13 @@ async function addToCart(productId, userId) {
             await Cart.create(cart);
         }
         else {
-            const product = cart.items?.find(item => item.productId.toString() === productId);
+            const item = cart.items?.find(item => item.product.toString() === productId);
 
-            if (product) {
-                product.quantity += 1;
+            if (item) {
+                item.quantity += 1;
             }
             else {
-                cart.items.push({ productId })
+                cart.items.push({ product: productId })
             }
 
             await cart.save();
@@ -60,18 +59,18 @@ async function removeFromCart(productId, userId) {
             throw new HttpException(404, "Cart is empty.")
         }
         else {
-            const product = cart.items?.find(item => item.productId.toString() === productId);
+            const removedItem = cart.items?.find(item => item.product.toString() === productId);
 
-            if (product) {
-                product.quantity -= 1;
+            if (removedItem) {
+                removedItem.quantity -= 1;
             }
             else {
                 throw new HttpException(404, "Given Product is already removed!")
             }
 
-            if (product.quantity === 0) {
+            if (removedItem.quantity === 0) {
                 cart.items = cart.items.filter(item => 
-                    item._id.toString() != product._id
+                    item._id.toString() != removedItem._id
                 )
             }
 
@@ -85,6 +84,27 @@ async function removeFromCart(productId, userId) {
     }
 }
 
+async function getUserCart(userId) {
+    try {
+        const userCart = await Cart.findOne({
+            user: userId
+        })
+        .populate({
+            path: "items.product",
+            model: "Product"
+        });
+
+        return userCart;
+    }
+    catch (e) {
+        const status = e?.errorCode || 500;
+        const message = e?.message || "Error while fetching the cart.";
+        throw new HttpException(status, message)
+    }
+}
+
 module.exports = {
-    addToCart
+    addToCart,
+    removeFromCart,
+    getUserCart
 }
