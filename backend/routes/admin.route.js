@@ -12,8 +12,8 @@ const adminController = new AdminController();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// adminRouter.use(authenticateUser)
-// adminRouter.use(authorizeAdmin);
+adminRouter.use(authenticateUser)
+adminRouter.use(authorizeAdmin);
 
 adminRouter.post("/add-product", upload.single('image'), async (req, res) => {
     try {
