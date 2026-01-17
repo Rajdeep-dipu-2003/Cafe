@@ -31,6 +31,17 @@ userRouter.post("/remove-from-cart", async (req, res) => {
     }
 })
 
+userRouter.get("/get-user-cart", async (req, res) => {
+    try {
+        await userController.getUserCart(req, res);
+    }
+    catch (e) {
+        res
+            .status(e?.errorCode || 500)
+            .json({error: e?.message || "Internal Server Error."})
+    }
+})
+
 userRouter.post("/checkout", async (req, res) => {
     try {
         await userController.checkout(req, res);
