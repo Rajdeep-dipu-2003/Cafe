@@ -17,19 +17,22 @@ class AdminController {
             if (!req.file) {
                 return res.status(400).json({
                     status: "Fail",
-                    message: "Category image is required" 
+                    message: "Category image is required"
                 });
             }
 
             const imageUrl = await cloudinaryService.uploadToCloudinary(req.file);
 
-            const productTags = [];
+            let productTags = [];
 
             if (req.body.tags) {
-                productTags = tags.split(",");
+                const tagsString = req.body.tags;
+                productTags = tagsString.split(",");
             }
 
-            await productService.createNewProduct({...productDto, imageUrl, tags : productTags});
+            // console.log(productTags)
+
+            await productService.createNewProduct({ ...productDto, imageUrl, tags: productTags });
 
             return res.status(201).json({
                 success: true,
@@ -70,13 +73,13 @@ class AdminController {
             if (!req.file) {
                 return res.status(400).json({
                     status: "Fail",
-                    message: "Category image is required" 
+                    message: "Category image is required"
                 });
             }
 
             const imageUrl = await cloudinaryService.uploadToCloudinary(req.file);
 
-            await categoryService.createNewCategory({...categoryDto, imageUrl});
+            await categoryService.createNewCategory({ ...categoryDto, imageUrl });
 
             return res.status(200).json({ message: "New category created successfully." })
         }
