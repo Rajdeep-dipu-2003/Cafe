@@ -85,9 +85,68 @@ async function getPopularProducts() {
     }
 }
 
+async function getProducts(query) {
+    try {
+        if (!query) {
+            return [];
+        }
+
+        const products = Product.aggregate([
+            {
+                $search: {
+                    index: "product_search",
+                    compound: {
+                        should: [
+                            {
+                                text: {
+                                    query,
+                                    path: "name",
+                                    fuzzy: {
+                                        maxEdits: 2
+                                    }
+                                }
+                            },
+                            {
+                                text: {
+                                    query,
+                                    path: "tags",
+                                    fuzzy: {
+                                        maxEdits: 2
+                                    }
+                                }
+                            },
+                            {
+                                text: {
+                                    query,
+                                    path: "description",
+                                    fuzzy: {
+                                        maxEdits: 1
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+            },
+            {
+                $limit: 20
+            }
+        ]);
+
+        return products;
+    }
+    catch (e) {
+        const status = e?.errorCode || 500;
+        const errorMessage = e?.message || "Failed to fetch products of the given category.";
+
+        throw new HttpException(status, errorMessage);
+    }
+}
+
 module.exports = {
     createNewProduct,
     getAllProductsOfCategory,
     deleteProduct,
-    getPopularProducts
+    getPopularProducts,
+    getProducts
 }
