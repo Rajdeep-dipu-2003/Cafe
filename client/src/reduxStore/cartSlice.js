@@ -8,11 +8,14 @@ const cartSlice = createSlice({
         items: []
     },
     reducers: {
+        setCart(state, action) {
+            state.items = action.payload;
+        },
         addToCart(state, action) {
             const product = action.payload;
 
             const existingItem = state.items.find(
-                item => item._id == product._id
+                item => item.product._id == product._id
             );
 
             if (existingItem) {
@@ -20,7 +23,7 @@ const cartSlice = createSlice({
             }
             else {
                 state.items.push({
-                    ...product, 
+                    product, 
                     quantity : 1
                 });
             }
@@ -30,7 +33,7 @@ const cartSlice = createSlice({
             const product = action.payload;
 
             const existingItem = state.items.find(
-                item => item._id == product._id
+                item => item.product._id == product.product._id
             );
 
             if (existingItem.quantity > 1) {
@@ -38,7 +41,7 @@ const cartSlice = createSlice({
             }
             else {
                 state.items = state.items.filter(
-                    item => item._id !== product._id
+                    item => item.product._id !== product.product._id
                 );
             }
         },
@@ -64,11 +67,11 @@ export const removeFromCartAsync = createAsyncThunk(
         dispatch(removeFromCart(product));
 
         await api.post("/user/remove-from-cart", {
-            productId: product._id,
+            productId: product.product._id,
         })
     }
     
 )
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, setCart } = cartSlice.actions;
 export default cartSlice.reducer;
