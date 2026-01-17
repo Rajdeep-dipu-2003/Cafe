@@ -3,8 +3,11 @@
 const express = require("express");
 const userRouter = express.Router();
 
-const UserController = require("../controllers/user.controller")
+const UserController = require("../controllers/user.controller");
+const authenticateUser = require("../middlewares/authentication.middleware");
 const userController = new UserController();
+
+// userRouter.use(authenticateUser);
 
 userRouter.post("/add-to-cart", async (req, res) => {
     try {
@@ -15,7 +18,29 @@ userRouter.post("/add-to-cart", async (req, res) => {
             .status(e?.errorCode || 500)
             .json({ error: e?.message || "Internal Server Error" })
     }
+});
+
+userRouter.post("/remove-from-cart", async (req, res) => {
+    try {
+        await userController.removeFromCart(req, res);
+    }
+    catch (e) {
+        res
+            .status(e?.errorCode || 500)
+            .json({ error: e?.message || "Internal Server Error" })
+    }
 })
+
+userRouter.post("/checkout", async (req, res) => {
+    try {
+        await userController.checkout(req, res);
+    }
+    catch (e) {
+        res
+            .status(e?.errorCode || 500)
+            .json({ error: e?.message || "Internal Server Error" })
+    }
+});
 
 module.exports = userRouter
 
