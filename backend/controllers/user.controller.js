@@ -58,6 +58,28 @@ class UserController {
         }
     }
 
+    async getUserCart(req, res) {
+        try {
+            const userId = req.user?.userId || "696667622dfe107216821e81";
+
+            if (!userId) {
+                throw new HttpException(403, "Invalid User Id.")
+            }
+
+            const userCart = await cartService.getUserCart(userId);
+
+            return res.status(200).json({
+                "message": "Sccess",
+                cart: userCart
+            })
+        }
+        catch (e) {
+            res
+                .status(e?.errorCode || 500)
+                .json({ error: e?.message || "Internal Server Error" })
+        }
+    }
+
     async checkout(req, res) {
         try {
             
