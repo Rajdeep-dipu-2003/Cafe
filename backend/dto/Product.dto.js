@@ -3,11 +3,9 @@ const { z } = require("zod");
 
 const productSchema = z.object({
     name: z.string().min(1),
-    price: z.number().positive(),
+    price: z.coerce.number().positive("Price must be a positive number"),
     categoryId: z.string().min(1),
-    imageUrl: z.string().min(1),
     description: z.string().min(1).max(500),
-    tags: z.array(z.string()).optional()
 });
 
 class ProductDTO {
