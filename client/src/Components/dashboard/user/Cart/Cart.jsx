@@ -1,6 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
-import { addToCart, removeFromCart } from "../../../../reduxStore/cartSlice";
+import { addToCart, removeFromCartAsync,removeFromCart, setCart } from "../../../../reduxStore/cartSlice";
 import CartItem from "./CartItem";
+import { useEffect } from "react";
+import api from "@lib/axios"
 
 function Cart() {
     const dispatch = useDispatch();
@@ -12,8 +14,21 @@ function Cart() {
     };
 
     const handleDecrease = (product) => {
-        dispatch(removeFromCart(product));
+        dispatch(removeFromCartAsync(product));
     };
+
+    useEffect(() => {
+        const fetchCart = async () => {
+            try {
+                const response = await api.get("/user/get-user-cart");
+                dispatch(setCart(response.data.cart.items));
+            }
+            catch (e) {
+                console.log("Error", e)
+            }
+        };
+        fetchCart();
+    }, [dispatch])
 
     return (
         <div className="min-h-screen bg-gray-100 p-6">
