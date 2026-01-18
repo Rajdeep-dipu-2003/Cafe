@@ -30,8 +30,9 @@ function Authentication() {
             }
         }
         catch (e) {
-            console.log(e);
-            toast.error("Error while singin, please check crendentials.")
+            const errorMessage =
+            e?.response?.data?.error || "Something went wrong";
+            toast.error(errorMessage)
         }
         finally {
             setLoading(false);
@@ -54,8 +55,9 @@ function Authentication() {
             }
         }
         catch (e) {
-            console.log(e);
-            toast.error("Error while signup, please check crenditials.")
+            const errorMessage =
+            e?.response?.data?.error || "Something went wrong";
+            toast.error(errorMessage)
         }
         finally {
             setLoading(false);
