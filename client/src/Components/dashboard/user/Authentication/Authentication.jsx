@@ -1,10 +1,72 @@
 import { useState } from "react"
+import api from "@lib/axios"
+import Spinner from "../Util/Spinner";
+import { useNavigate } from "react-router"
+import toast, { Toaster } from 'react-hot-toast';
 
 function Authentication() {
     const [mode, setMode] = useState("signin") // signin | signup
+    const [userDetails, setUserDetails] = useState({
+        name: "",
+        email: "",
+        password: "",
+        phoneNumber: ""
+    })
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
+
+    const handleSignin = async () => {
+        try {
+            setLoading(true)
+
+            const response = await api.post("/auth/signin", {
+                email: userDetails.email,
+                password: userDetails.password
+            });
+
+            if (response.data.success) {
+                navigate("/user/dashboard")
+            }
+        }
+        catch (e) {
+            console.log(e);
+            toast.error("Error while singin, please check crendentials.")
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    const handleSignup = async () => {
+        try {
+            setLoading(true)
+
+            const response = await api.post("/auth/signup", {
+                name: userDetails.name,
+                email: userDetails.email,
+                password: userDetails.password,
+                phoneNumber: userDetails.phoneNumber
+            });
+
+            if (response.data.success) {
+                navigate("/user/dashboard")
+            }
+        }
+        catch (e) {
+            console.log(e);
+            toast.error("Error while signup, please check crenditials.")
+        }
+        finally {
+            setLoading(false);
+        }
+    }
 
     return (
-        <div className="h-screen w-screen flex items-center justify-center bg-gray-200">
+        <div className="h-screen w-screen mt-[-64px] flex items-center justify-center bg-gray-200">
+
+            <Toaster />
+
             <div className="h-[600px] w-[900px] bg-white shadow-lg rounded-lg overflow-hidden flex">
 
                 {/* LEFT SECTION */}
@@ -39,6 +101,8 @@ function Authentication() {
                                 <input
                                     type="text"
                                     placeholder="John Doe"
+                                    value={userDetails.name}
+                                    onChange={e => setUserDetails(prev => ({ ...prev, name: e.target.value }))}
                                     className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-red-400"
                                 />
                             </div>
@@ -50,6 +114,8 @@ function Authentication() {
                             </label>
                             <input
                                 type="email"
+                                value={userDetails.email}
+                                onChange={e => setUserDetails(prev => ({ ...prev, email: e.target.value }))}
                                 placeholder="user@example.com"
                                 className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-red-400"
                             />
@@ -62,18 +128,23 @@ function Authentication() {
                             <input
                                 type="password"
                                 placeholder="••••••••"
+                                value={userDetails.password}
+                                onChange={e => setUserDetails(prev => ({ ...prev, password: e.target.value }))}
                                 className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-red-400"
                             />
                         </div>
 
+
                         {mode === "signup" && (
                             <div>
                                 <label className="block text-sm text-gray-600 mb-1">
-                                    Confirm Password
+                                    Phone Number
                                 </label>
                                 <input
-                                    type="password"
-                                    placeholder="••••••••"
+                                    type="text"
+                                    placeholder="+91"
+                                    value={userDetails.phoneNumber}
+                                    onChange={e => setUserDetails(prev => ({ ...prev, phoneNumber: e.target.value }))}
                                     className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-red-400"
                                 />
                             </div>
@@ -81,9 +152,22 @@ function Authentication() {
 
                         <button
                             type="button"
-                            className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition"
+                            disabled={loading}
+                            onClick={mode === "signin" ? handleSignin : handleSignup}
+                            className={`w-full flex items-center justify-center gap-2 py-2 rounded-md transition
+                            ${loading
+                                    ? "bg-red-400 cursor-not-allowed"
+                                    : "bg-red-600 hover:bg-red-700 text-white"
+                                }`}
                         >
-                            {mode === "signin" ? "Sign In" : "Sign Up"}
+                            {loading ? (
+                                <>
+                                    <Spinner />
+                                    <span>Processing...</span>
+                                </>
+                            ) : (
+                                mode === "signin" ? "Sign In" : "Sign Up"
+                            )}
                         </button>
                     </form>
 
