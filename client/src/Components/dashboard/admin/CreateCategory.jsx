@@ -181,12 +181,6 @@ const handleCreateNewCategory = async (e) => {
                     {/* Actions */}
                     <div className="flex justify-end gap-3 pt-4">
                         <button
-                            type="button"
-                            className="rounded-md border border-gray-300 px-5 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                            Cancel
-                        </button>
-                        <button
                             type="submit"
                             onClick={handleCreateNewCategory}
                             disabled={loading} // Prevents clicks while loading
