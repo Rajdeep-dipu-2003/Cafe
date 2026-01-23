@@ -7,7 +7,6 @@ function UserDashboard() {
         <div
             className="flex flex-col items-center justify-center"
         >
-            <Navbar />
             <CategoryFilter />
             <PopularItemsFilter/>
         </div>
