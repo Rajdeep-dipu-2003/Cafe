@@ -18,7 +18,7 @@ function CreateProduct() {
 
     useEffect(() => {
         const getAllCategories = async () => {
-            const response = await axios.get("http://localhost:8000/api/v1/admin/get-all-categories");
+            const response = await axios.get("http://localhost:8000/api/v1/shared/get-all-categories");
 
             // console.log(response.data.categories);
 
@@ -107,13 +107,15 @@ function CreateProduct() {
             return;
         }
 
+
+
         setLoading(true);
 
         try {
             const formData = new FormData();
 
-            requiredFields.forEach(field => {
-                formData.append(field, productFormData[field]);
+            Object.entries(productFormData).forEach(([key, val]) => {
+                formData.append(key, val);
             });
 
             const response = await axios.post(
@@ -133,6 +135,7 @@ function CreateProduct() {
 
         }
         catch (error) {
+            console.log(error);
             const errorMessage = error.response?.data?.message || "Error creating product";
             toast.error(errorMessage);
         }
